@@ -1,0 +1,62 @@
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
+
+# The relevant dataset for Anime and K-Drama descriptions
+data = [
+    {"description": "A young girl discovers her powers and navigates love and friendship in high school.", "genre": "Romance"},
+    {"description": "A warrior sets out on a mission to defeat an evil king and save his kingdom.", "genre": "Action"},
+    {"description": "Two childhood friends find themselves entangled in a magical quest.", "genre": "Fantasy"},
+    {"description": "A charming prince and a regular girl from Earth begin an unlikely romance.", "genre": "Romance"},
+    {"description": "A group of young heroes fight to protect their city from monsters.", "genre": "Action"},
+    {"description": "A teenage boy finds himself trapped in a fantasy world full of mythical creatures.", "genre": "Fantasy"},
+    {"description": "Two high school students navigate the complexities of first love and jealousy.", "genre": "Romance"},
+    {"description": "An elite agent goes undercover to bring down a dangerous crime syndicate.", "genre": "Action"},
+    {"description": "A mystical prophecy tells of a hero who will bring peace to the land.", "genre": "Fantasy"},
+    {"description": "Two unlikely characters fall in love in a world where love is forbidden.", "genre": "Romance"},
+    {"description": "A group of friends tackle the highs and lows of teenage life.", "genre": "Slice of Life"},
+    {"description": "A bumbling but lovable detective solves crimes in the most unusual ways.", "genre": "Comedy"},
+    {"description": "A young chef competes in a high-stakes culinary competition.", "genre": "Slice of Life"},
+    {"description": "Two rival comedians develop a friendship that leads to unexpected laughter.", "genre": "Comedy"},
+]
+
+# conversion in dataframe
+df = pd.DataFrame(data)
+
+# Display the dataset
+print("Dataset:")
+print(df.to_string(index=False), "\n")
+
+# processing data
+vectorizer = TfidfVectorizer()
+X = vectorizer.fit_transform(df['description'])
+y = df['genre']
+
+# Splitting Dataset
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Defining
+model = LogisticRegression(max_iter=200)
+model.fit(X_train, y_train)
+
+# predicting
+y_pred = model.predict(X_test)
+
+print("Accuracy:", accuracy_score(y_test, y_pred), "\n")
+print("Classification Report:\n", classification_report(y_test, y_pred))
+
+sample_descriptions = [
+    "A young detective unravels a mystery that connects two worlds.",
+    "A high school girl befriends a supernatural being to navigate life.",
+    "Two warriors battle to save their kingdom from dark forces.",
+    "Friends form a band to pursue their dreams amidst challenges."
+]
+
+sample_vectors = vectorizer.transform(sample_descriptions)
+sample_predictions = model.predict(sample_vectors)
+
+print("\nSample Predictions:")
+for desc, pred in zip(sample_descriptions, sample_predictions):
+    print(f"Description: '{desc}'\nPredicted Category: {pred}\n")
